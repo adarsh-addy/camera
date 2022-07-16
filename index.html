@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Camera</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.0.0/cropper.min.css"
+    integrity="sha256-FeDcPwV8ZgxG1MU5L/b2i8clOmqZJKK0eyDHqrQaXxY=" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.0.0/cropper.min.js"></script>
+
+
+  <style>
+    /* .crop-btn{
+margin-left:-168px ;
+    } */
+    .hide{
+      display: none;
+    }
+   .adarsh{
+    width: 320px;
+    height: 240px;
+    background-color: aqua;
+   }
+
+    .m-border {
+      border: 2px solid rgb(184, 46, 46);
+      position: relative;
+    }
+
+    .width-m {
+      width: 25%;
+    }
+
+    .sample>img {
+      margin: 10px;
+    }
+  </style>
+
+
+</head>
+<body> 
+
+<div class="card">
+  <div class="card-body">
+    <div class="container width-m">
+      <div class="row m-border">
+        <div class="col m-border">
+          <video id="video" width="320" height="240"  autoplay></video>
+          <button id="start-camera">Start Camera</button>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col m-border">
+          <div class="adarsh">
+            <canvas id="canvas" width="320" height="237"></canvas>
+          </div>
+          
+          <button id="click-photo" style="margin:10px;">Click Photo</button>
+          <button id="m_save_button" class="crop-btn" style="margin:10px;">Crop</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col m-border">
+         
+          <div id="m_cropped_result" class="sample"></div>
+         
+        </div>
+      </div>
+     </div>
+  </div>
+</div>
+ 
+  <script>
+     //for camera
+ let camera_button = document.querySelector("#start-camera");
+ let video = document.querySelector("#video");
+ let click_button = document.querySelector("#click-photo");
+ let canvas = document.querySelector("#canvas");
+
+ camera_button.addEventListener("click", async function (e) {
+   e.preventDefault();
+   console.log("hi")
+   let stream = await navigator.mediaDevices.getUserMedia({
+     video: true,
+     audio: false,
+   });
+   video.srcObject = stream;
+ });
+console.log(camera_button);
+ click_button.addEventListener("click", function (e) {
+   e.preventDefault()
+   canvas
+     .getContext("2d")
+     .drawImage(video, 0, 0, canvas.width, canvas.height);
+   let image_data_url = canvas.toDataURL("image/jpeg");
+
+   // data url of the image
+   console.log(image_data_url);
+
+   //cropper code
+
+   var img1url;
+  
+   console.log("Came here");
+   var cropper1 = new Cropper(canvas, {
+     aspectRatio: 16 / 9,
+     crop: function (e) {
+       console.log(e.detail.x);
+       console.log(e.detail.y);
+     },
+   });
+
+   // save on click
+   let flag=true;
+   document
+     .getElementById("m_save_button")
+     .addEventListener("click", (e) => {
+       e.preventDefault();
+       // get result to data uri
+       if(flag){
+       img1url = cropper1.getCroppedCanvas().toDataURL();
+       console.log(img1url);
+       //showing the image
+       var img1 = document.createElement("img");
+       img1.src = img1url;
+       document.getElementById("m_cropped_result").appendChild(img1);
+       flag=false;
+       }
+     });
+   // }
+ });
+  </script>
+
+</body>
+
+</html>
